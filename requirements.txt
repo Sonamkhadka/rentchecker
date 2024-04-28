@@ -2,3 +2,4 @@ Flask
 werkzeug
 Pillow
 pytesseract
+gunicorn
