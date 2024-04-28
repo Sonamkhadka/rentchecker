@@ -1,0 +1,9 @@
+services:
+- type: web
+  name: email-app
+  env: python
+  buildCommand: pip install -r requirements.txt
+  startCommand: python email_app.py
+  envVars:
+  - key: PYTHONUNBUFFERED
+    value: 'true'
