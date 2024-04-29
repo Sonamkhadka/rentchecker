@@ -4,6 +4,8 @@ from PIL import Image
 import pytesseract
 import os
 import re
+import smtplib
+from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
@@ -31,13 +33,31 @@ def upload_file():
         receipt_no = re.search(receipt_no_pattern, text)
         description = re.search(description_pattern, text)
         
-        return render_template('receipt.html', 
+        return render_template('form.html', 
                                date=date.group(1) if date else "N/A", 
                                amount=amount.group(1) if amount else "N/A", 
                                receipt_no=receipt_no.group(1) if receipt_no else "N/A", 
                                description=description.group(1) if description else "N/A")
     else:
         return 'No receipt uploaded'
+
+@app.route('/submit', methods=['POST'])
+def submit_form():
+    date = request.form.get('date')
+    amount = request.form.get('amount')
+    receipt_no = request.form.get('receipt_no')
+    description = request.form.get('description')
+
+    msg = MIMEText(f"Date: {date}\nAmount: {amount}\nReceipt No: {receipt_no}\nDescription: {description}")
+    msg['Subject'] = 'Receipt Information'
+    msg['From'] = 'checkrent757@gmail.com'
+    msg['To'] = 'checkrent757@gmail.com'
+
+    s = smtplib.SMTP('localhost')
+    s.send_message(msg)
+    s.quit()
+
+    return 'Form submitted and email sent'
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
